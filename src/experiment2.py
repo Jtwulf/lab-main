@@ -216,5 +216,5 @@ def main(process_mode):
 
 
 if __name__ == "__main__":
-    process_mode = 'combined_box'  # 'bar' | 'combined_bar' | 'box' | 'combined_box' | 'violin' | 'combined_violin' | 'rms_plot'
+    process_mode = 'combined_box'  # 'bar' | 'combined_bar' | 'box' | 'combined_box' | 'violin' | 'combined_violin'
     main(process_mode)
