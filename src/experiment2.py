@@ -2,6 +2,21 @@ from external_libraries import *
 from modules import *
 import data_const as const
 
+def perform_anova_on_sections(component_averages):
+    intro_data = []
+    drop_data = []
+    break_data = []
+    outro_data = []
+
+    for component in component_averages.values():
+        intro_data.extend(component['intro'])
+        drop_data.extend(component['drop'])
+        break_data.extend(component['break'])
+        outro_data.extend(component['outro'])
+
+    F, p = f_oneway(intro_data, drop_data, break_data, outro_data)
+    print(f"ANOVA across sections: F = {F}, p-value = {p}")
+
 def get_spectral_centroid(audio_file: str) -> Tuple[np.ndarray, float, np.ndarray]:
     y, sr = librosa.load(audio_file, sr=None)
     spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
@@ -197,6 +212,8 @@ def main(process_mode):
     component_averages = {component: {'intro': [], 'drop': [], 'break': [], 'outro': []} for component in components}
 
     process_files(json_directory, demucs_directory, allin1, component_averages, components)
+
+    perform_anova_on_sections(component_averages)
 
     if process_mode == 'bar':
         for component in components:
