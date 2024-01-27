@@ -1,0 +1,15 @@
+Experiment1
+ANOVA across sections: F = 1.2638155327635074, p-value = 0.2997600768447745
+t-test between intro and drop: t-statistic = 1.0771180167785896, p-value = 0.29424885623168895
+t-test between intro and break: t-statistic = 1.7074066236689538, p-value = 0.10322460928648165
+t-test between intro and outro: t-statistic = 0.07748933002956383, p-value = 0.9390042724362526
+t-test between drop and break: t-statistic = 1.182720357422287, p-value = 0.25078991184424804
+t-test between drop and outro: t-statistic = -0.8956537199693283, p-value = 0.38109140493194815
+t-test between break and outro: t-statistic = -1.4901610044389042, p-value = 0.15178457920772292
+
+Experiment2
+ANOVA across sections: F = 30.07000249114023, p-value = 2.249818566571655e-18
+ANOVA for bass: F-value = 0.6053229160965814, p-value = 0.6162207236103352
+ANOVA for drums: F-value = 0.8839290774799963, p-value = 0.45835009621290856
+ANOVA for other: F-value = 0.5821376323120053, p-value = 0.6307981089782806
+ANOVA for vocals: F-value = 0.5327704695658749, p-value = 0.6633243876489152
