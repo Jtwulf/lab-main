@@ -2,6 +2,20 @@ from external_libraries import *
 from modules import *
 import data_const as const
 
+def perform_anova_on_sections(component_averages):
+    F, p = f_oneway(component_averages['intro'], component_averages['drop'], component_averages['break'], component_averages['outro'])
+    print(f"ANOVA across sections: F = {F}, p-value = {p}")
+
+def perform_t_tests_on_all_sections(all_section_averages):
+    sections = list(all_section_averages.keys())
+
+    for section1, section2 in combinations(sections, 2):
+        data1 = all_section_averages[section1]
+        data2 = all_section_averages[section2]
+
+        t_stat, p_value = ttest_ind(data1, data2)
+        print(f"t-test between {section1} and {section2}: t-statistic = {t_stat}, p-value = {p_value}")
+
 def get_spectral_centroid(audio_file: str, n_fft=2048*2) -> Tuple[np.ndarray, float, np.ndarray]:
     y, sr = librosa.load(audio_file, sr=None)
     spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr, n_fft=n_fft)
@@ -90,6 +104,11 @@ def main(process_mode):
     all_section_averages = {'intro': [], 'drop': [], 'break': [], 'outro': []}
 
     process_files(json_directory, song_directory, allin1, all_section_averages)
+
+    # ANOVA
+    perform_anova_on_sections(all_section_averages)
+    # t検定
+    perform_t_tests_on_all_sections(all_section_averages)
 
     if process_mode == 'bar':
         plot_bar_graph(all_section_averages)

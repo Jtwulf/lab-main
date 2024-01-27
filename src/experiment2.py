@@ -3,19 +3,15 @@ from modules import *
 import data_const as const
 
 def perform_anova_on_sections(component_averages):
-    intro_data = []
-    drop_data = []
-    break_data = []
-    outro_data = []
+    for component in component_averages:
+        intro_data = component_averages[component]['intro']
+        drop_data = component_averages[component]['drop']
+        break_data = component_averages[component]['break']
+        outro_data = component_averages[component]['outro']
 
-    for component in component_averages.values():
-        intro_data.extend(component['intro'])
-        drop_data.extend(component['drop'])
-        break_data.extend(component['break'])
-        outro_data.extend(component['outro'])
+        f_value, p_value = f_oneway(intro_data, drop_data, break_data, outro_data)
 
-    F, p = f_oneway(intro_data, drop_data, break_data, outro_data)
-    print(f"ANOVA across sections: F = {F}, p-value = {p}")
+        print(f"ANOVA for {component}: F-value = {f_value}, p-value = {p_value}")
 
 def get_spectral_centroid(audio_file: str) -> Tuple[np.ndarray, float, np.ndarray]:
     y, sr = librosa.load(audio_file, sr=None)
@@ -164,23 +160,6 @@ def plot_combined_violin_plot(component_averages, components):
     plt.tight_layout()
     plt.show()
 
-"""
-def plot_rms(audio_path, threshold=0.01, title=""):
-    y, sr = librosa.load(audio_path, sr=None)
-    rms = librosa.feature.rms(y=y)[0]
-    times = librosa.times_like(rms, sr=sr)
-
-    plt.figure(figsize=(10, 4))
-    plt.plot(times, rms)
-    plt.axhline(y=threshold, color='r', linestyle='--', label='Threshold')
-    plt.fill_between(times, rms, threshold, where=rms < threshold, color='red', alpha=0.5)
-    plt.title(title)
-    plt.xlabel('Time (s)')
-    plt.ylabel('RMS')
-    plt.legend()
-    plt.show()
-"""
-
 def process_files(json_directory, song_directory, allin1, component_averages, components):
     for root, dirs, files in tqdm(os.walk(json_directory), desc="Processing files"):
         for file in tqdm(files, desc="Overall Progress", leave=False):
@@ -203,9 +182,9 @@ def process_file(json_path, song_directory, component_averages, allin1, componen
                     component_averages[component][section].append(average)
 
 def main(process_mode):
-    song_directory = const.PROD_SONG_DIRECTORY
-    json_directory = const.PROD_JSON_DIRECTORY
-    demucs_directory = const.PROD_DEMUCS_DIRECTORY
+    song_directory = const.DEMO_SONG_DIRECTORY
+    json_directory = const.DEMO_JSON_DIRECTORY
+    demucs_directory = const.DEMO_DEMUCS_DIRECTORY
     allin1 = Allin1()
 
     components = ['bass', 'drums', 'other', 'vocals']
@@ -213,6 +192,7 @@ def main(process_mode):
 
     process_files(json_directory, demucs_directory, allin1, component_averages, components)
 
+    # ANOVA
     perform_anova_on_sections(component_averages)
 
     if process_mode == 'bar':
