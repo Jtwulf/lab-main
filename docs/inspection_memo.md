@@ -71,13 +71,13 @@
 * データの等分散性：レヴィンの検定
 
 **結果(データの正規性，データの等分散性)**
-
-Normality test for intro: Statistics = 21.949779128951832, p-value = 1.7126397616977218e-05
-Normality test for drop: Statistics = 2.821290793972529, p-value = 0.24398576465072427
-Normality test for break: Statistics = 0.025021684488967133, p-value = 0.9875670929919688
-Normality test for outro: Statistics = 32.03135056110743, p-value = 1.1078490808232814e-07
-Levene's test for homoscedasticity: Statistics = 41.14565669666013, p-value = 1.2188188360901619e-24
-
+```
+Normality test for intro: Statistics = 21.949779128951832, p-value = 1.7126397616977218e-05  
+Normality test for drop: Statistics = 2.821290793972529, p-value = 0.24398576465072427  
+Normality test for break: Statistics = 0.025021684488967133, p-value = 0.9875670929919688  
+Normality test for outro: Statistics = 32.03135056110743, p-value = 1.1078490808232814e-07  
+Levene's test for homoscedasticity: Statistics = 41.14565669666013, p-value = 1.2188188360901619e-24  
+```
 **評価**
 
 * データの正規性
@@ -93,10 +93,12 @@ Levene's test for homoscedasticity: Statistics = 41.14565669666013, p-value = 1.
 * データを変換した上でのパラメトリック検定
     * 正規性がないデータに対して，対数変換や平方根変換などを行って正規分布に近づけることができる場合は，パラメトリック検定が使える
     * データ変換（対数変換）を行なった結果
-        Reevaluated normality test for intro: Statistics = 6.77703334129838, p-value = 0.03375871507176448
-        Reevaluated normality test for drop: Statistics = 12.219343234183503, p-value = 0.00222128012347214
-        Reevaluated normality test for break: Statistics = 23.83692835909924, p-value = 6.666175974917747e-06
+      ```
+        Reevaluated normality test for intro: Statistics = 6.77703334129838, p-value = 0.03375871507176448  
+        Reevaluated normality test for drop: Statistics = 12.219343234183503, p-value = 0.00222128012347214  
+        Reevaluated normality test for break: Statistics = 23.83692835909924, p-value = 6.666175974917747e-06  
         Reevaluated normality test for outro: Statistics = 47.15310321788657, p-value = 5.7654569535665786e-11
+      ``` 
         更に正規分布から外れてしまったので，多分データ変換してパラメトリック検定を使う方針はやめた方がいい
 
 * ウェルチのANOVA検定([https://zenn.dev/tmizuho/articles/648c7f37869914](https://zenn.dev/tmizuho/articles/648c7f37869914))
@@ -112,9 +114,9 @@ Levene's test for homoscedasticity: Statistics = 41.14565669666013, p-value = 1.
 * 非パラメトリック検定：クラスカル・ウォリス検定(平均値ではなく中央値についての比較である点に留意)
 
 **検定結果**
-
+```
 Kruskal-Wallis test: Statistics = 70.71760398337165, p-value = 2.996313371181593e-15
-
+```
 **評価**
 
 p値が非常に小さいので，少なくとも一つのセクションが異なるセクションの中央値と有意差がある
