@@ -24,5 +24,7 @@ from tqdm import tqdm
 from mido import MidiFile
 import pprint
 from collections import defaultdict
-from scipy.stats import f_oneway, ttest_ind
+from scipy.stats import f_oneway, ttest_ind, normaltest, levene, kruskal
 from itertools import combinations
+import scikit_posthocs
+import pandas as pd

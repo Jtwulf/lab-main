@@ -2,6 +2,53 @@ from external_libraries import *
 from modules import *
 import data_const as const
 
+def perform_dunn_test(all_section_averages):
+    data = []
+    groups = []
+    for section, values in all_section_averages.items():
+        for value in values:
+            data.append(value)
+            groups.append(section)
+    df = pd.DataFrame({'Value': data, 'Group': groups})
+
+    stat, p = kruskal(*all_section_averages.values())
+    print(f"Kruskal-Wallis test: Statistics = {stat}, p-value = {p}")
+
+    if p < 0.05:
+        dunn_p_values = scikit_posthocs.posthoc_dunn(df, val_col='Value', group_col='Group', p_adjust='bonferroni')
+        print("Dunn's test results (p-values):")
+        print(dunn_p_values)
+
+def perform_kruskal_wallis_test(all_section_averages):
+    data = [values for values in all_section_averages.values() if values]
+
+    stat, p = kruskal(*data)
+    print(f"Kruskal-Wallis test: Statistics = {stat}, p-value = {p}")
+
+def apply_log_transformation(data):
+    if np.any(data <= 0):
+        data = data + 1
+    return np.log(data)
+
+def reevaluate_normality(all_section_averages):
+    transformed_data = {}
+    for section, data in all_section_averages.items():
+        transformed_data[section] = apply_log_transformation(np.array(data))
+
+        stat, p = normaltest(transformed_data[section])
+        print(f"Reevaluated normality test for {section}: Statistics = {stat}, p-value = {p}")
+    return transformed_data
+
+def check_normality(all_section_averages):
+    for section, data in all_section_averages.items():
+        stat, p = normaltest(data)
+        print(f"Normality test for {section}: Statistics = {stat}, p-value = {p}")
+
+def check_homoscedasticity(all_section_averages):
+    data = [values for values in all_section_averages.values() if values]
+    stat, p = levene(*data)
+    print(f"Levene's test for homoscedasticity: Statistics = {stat}, p-value = {p}")
+
 def perform_anova_on_sections(component_averages):
     F, p = f_oneway(component_averages['intro'], component_averages['drop'], component_averages['break'], component_averages['outro'])
     print(f"ANOVA across sections: F = {F}, p-value = {p}")
@@ -105,10 +152,12 @@ def main(process_mode):
 
     process_files(json_directory, song_directory, allin1, all_section_averages)
 
-    # ANOVA
-    perform_anova_on_sections(all_section_averages)
-    # t検定
-    perform_t_tests_on_all_sections(all_section_averages)
+    # 対数変換をした上でダゴスティーノのK^2検定(正規性の検討)
+    transformed_data = reevaluate_normality(all_section_averages)
+    # レヴィンの検定(等分散性の検討)
+    check_homoscedasticity(all_section_averages)
+    # クラスカル・ウォリス検定を行い，有意差があった場合にダンの検定
+    perform_dunn_test(all_section_averages)
 
     if process_mode == 'bar':
         plot_bar_graph(all_section_averages)
