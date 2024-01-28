@@ -1,4 +1,8 @@
 Experiment1
+
+ver.1
+test: ANOVA and T-test
+
 ANOVA across sections: F = 1.2638155327635074, p-value = 0.2997600768447745
 t-test between intro and drop: t-statistic = 1.0771180167785896, p-value = 0.29424885623168895
 t-test between intro and break: t-statistic = 1.7074066236689538, p-value = 0.10322460928648165
@@ -6,6 +10,27 @@ t-test between intro and outro: t-statistic = 0.07748933002956383, p-value = 0.9
 t-test between drop and break: t-statistic = 1.182720357422287, p-value = 0.25078991184424804
 t-test between drop and outro: t-statistic = -0.8956537199693283, p-value = 0.38109140493194815
 t-test between break and outro: t-statistic = -1.4901610044389042, p-value = 0.15178457920772292
+
+ver.2
+normality test: D'Agostino's K-squared test
+homoscedasticity test: Levene test
+test: Kruskal-Wallis test
+posthoc test: Dunn test
+
+Reevaluated normality test for intro: Statistics = 6.77703334129838, p-value = 0.03375871507176448
+Reevaluated normality test for drop: Statistics = 12.219343234183503, p-value = 0.00222128012347214
+Reevaluated normality test for break: Statistics = 23.83692835909924, p-value = 6.666175974917747e-06
+Reevaluated normality test for outro: Statistics = 47.15310321788657, p-value = 5.7654569535665786e-11
+Levene's test for homoscedasticity: Statistics = 41.14565669666013, p-value = 1.2188188360901619e-24
+Kruskal-Wallis test: Statistics = 70.71760398337165, p-value = 2.996313371181593e-15
+Dunn's test results (p-values):
+              break      drop         intro         outro
+break  1.000000e+00  0.033925  3.378913e-09  1.707324e-13
+drop   3.392534e-02  1.000000  2.913576e-03  5.754806e-06
+intro  3.378913e-09  0.002914  1.000000e+00  9.867979e-01
+outro  1.707324e-13  0.000006  9.867979e-01  1.000000e+00
+
+
 
 Experiment2
 ANOVA across sections: F = 30.07000249114023, p-value = 2.249818566571655e-18
