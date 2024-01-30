@@ -64,7 +64,7 @@ def process_file(json_path, midi_directory, drum_mapping, drum_counts_per_bar_al
 def main():
     json_directory = const.PROD_JSON_DIRECTORY_TEMPO
     midi_directory = const.PROD_MIDI_DIRECTORY
-    drum_mapping = {'Acoustic Bass Drum': 35, 'Acoustic Snare': 38, 'Closed Hi-Hat': 42}
+    drum_mapping = {'Kick': 35, 'Snare': 38, 'Hi-Hat': 42}
     note_to_drum = {note: drum for drum, note in drum_mapping.items()}
 
     drum_counts_per_bar_all_songs = defaultdict(lambda: defaultdict(dict))
