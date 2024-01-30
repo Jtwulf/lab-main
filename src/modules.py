@@ -166,14 +166,17 @@ class RMS(Visualizer):
 class Drum(Visualizer):
     def __init__(self):
         self.drum_mapping = {
-                35: 'Acoustic Bass Drum',
+                # 35: 'Acoustic Bass Drum',
+                35: 'Kick',
                 36: 'Bass Drum 1',
                 37: 'Side Stick',
-                38: 'Acoustic Snare',
+                # 38: 'Acoustic Snare',
+                38: 'Snare',
                 39: 'Hand Clap',
                 40: 'Electric Snare',
                 41: 'Low Floor Tom',
-                42: 'Closed Hi-Hat',
+                # 42: 'Closed Hi-Hat',
+                42: 'Hi-Hat',
                 43: 'High Floor Tom',
                 44: 'Pedal Hi-Hat',
                 45: 'Low Tom',
@@ -521,3 +524,66 @@ class Allin1:
             print(f"Reverted time format in '{json_file}'.")
 
         print("All json files have been updated.")
+
+
+# matplotlibで箱ひげ図の上に検定のP値を表示する関数
+def barplot_annotate_brackets(num1, num2, data, center, height, yerr=None, dh=.05, barh=.05, fs=None, maxasterix=None):
+    """
+    Annotate barplot with p-values.
+
+    :param num1: number of left bar to put bracket over
+    :param num2: number of right bar to put bracket over
+    :param data: string to write or number for generating asterixes
+    :param center: centers of all bars (like plt.bar() input)
+    :param height: heights of all bars (like plt.bar() input)
+    :param yerr: yerrs of all bars (like plt.bar() input)
+    :param dh: height offset over bar / bar + yerr in axes coordinates (0 to 1)
+    :param barh: bar height in axes coordinates (0 to 1)
+    :param fs: font size
+    :param maxasterix: maximum number of asterixes to write (for very small p-values)
+    """
+
+    if type(data) is str:
+        text = data
+    else:
+        # * is p < 0.05
+        # ** is p < 0.005
+        # *** is p < 0.0005
+        # etc.
+        text = ''
+        p = .05
+
+        while data < p:
+            text += '*'
+            p /= 10.
+
+            if maxasterix and len(text) == maxasterix:
+                break
+
+        if len(text) == 0:
+            text = 'n. s.'
+
+    lx, ly = center[num1], height[num1]
+    rx, ry = center[num2], height[num2]
+
+    if yerr:
+        ly += yerr[num1]
+        ry += yerr[num2]
+
+    ax_y0, ax_y1 = plt.gca().get_ylim()
+    dh *= (ax_y1 - ax_y0)
+    barh *= (ax_y1 - ax_y0)
+
+    y = max(ly, ry) + dh
+
+    barx = [lx, lx, rx, rx]
+    bary = [y, y+barh, y+barh, y]
+    mid = ((lx+rx)/2, y+barh)
+
+    plt.plot(barx, bary, c='black')
+
+    kwargs = dict(ha='center', va='bottom')
+    if fs is not None:
+        kwargs['fontsize'] = fs
+
+    plt.text(*mid, text, **kwargs)
