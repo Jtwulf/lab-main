@@ -71,8 +71,8 @@ def process_midi_file(midi_path, json_directory, allin1, all_matching_rates, all
     section_changes = detect_section_changes(section_data)
 
     song_duration = max(max(event['times']) for event in events.values())
-    # matching_rate, matched_times_percent = calculate_drum_based_matching_rate(pattern_changes, section_changes, song_duration)
-    matching_rate, matched_times_percent = calculate_section_based_matching_rate(pattern_changes, section_changes, song_duration)
+    matching_rate, matched_times_percent = calculate_drum_based_matching_rate(pattern_changes, section_changes, song_duration)
+    # matching_rate, matched_times_percent = calculate_section_based_matching_rate(pattern_changes, section_changes, song_duration)
 
     if all_matching_rates is not None:
         all_matching_rates.append(matching_rate)
@@ -80,8 +80,6 @@ def process_midi_file(midi_path, json_directory, allin1, all_matching_rates, all
         all_matched_times_percent.extend(matched_times_percent)
 
     # drum.plot_drum_with_pattern_and_sections(song_name, events, pattern_changes, section_changes)
-
-from tqdm import tqdm
 
 def main(process_mode):
     midi_directory = const.PROD_MIDI_DIRECTORY
@@ -91,21 +89,24 @@ def main(process_mode):
     midi_files = [os.path.join(root, file) for root, dirs, files in os.walk(midi_directory) for file in files if file.endswith(".mid")]
     progress_bar = tqdm(total=len(midi_files), desc="Overall Progress")
 
+    all_matching_rates = []
+    for midi_path in midi_files:
+        process_midi_file(midi_path, json_directory, allin1, all_matching_rates, None)
+        progress_bar.update(1)
+
+    average_matching_rate = sum(all_matching_rates) / len(all_matching_rates) if all_matching_rates else 0
+    print(f"Average Matching Rate: {average_matching_rate:.2f}%")
+
     if process_mode == 'timeseries':
         all_matched_times_percent = []
         for midi_path in midi_files:
             process_midi_file(midi_path, json_directory, allin1, None, all_matched_times_percent)
-            progress_bar.update(1)
         plot_matched_times_percent(all_matched_times_percent)
     elif process_mode == 'distribution':
-        all_matching_rates = []
-        for midi_path in midi_files:
-            process_midi_file(midi_path, json_directory, allin1, all_matching_rates, None)
-            progress_bar.update(1)
         plot_matching_rates(all_matching_rates)
 
     progress_bar.close()
 
 if __name__ == "__main__":
-    process_mode = 'timeseries'  # 'timeseries' | 'distribution'
+    process_mode = 'distribution'  # 'timeseries' | 'distribution'
     main(process_mode)
