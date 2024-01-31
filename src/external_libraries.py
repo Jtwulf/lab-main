@@ -28,3 +28,4 @@ from scipy.stats import f_oneway, ttest_ind, normaltest, levene, kruskal
 from itertools import combinations
 import scikit_posthocs
 import pandas as pd
+from vistats import boxplot_annotate_brackets
