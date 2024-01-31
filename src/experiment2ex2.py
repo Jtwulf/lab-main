@@ -1,7 +1,34 @@
 from external_libraries import *
 from modules import *
 import data_const as const
-from experiment2 import plot_bar_graph, plot_combined_bar_graph, plot_box_plot, plot_violin_plot, plot_combined_box_plot, plot_combined_violin_plot
+from experiment2 import *
+
+def perform_kruskal_wallis_test_by_component(component_averages, component):
+    data = [component_averages[component][section] for section in component_averages[component] if component_averages[component][section]]
+    if len(data) > 1:
+        stat, p = kruskal(*data)
+        print(f"Kruskal-Wallis test for {component}: Statistics = {stat}, p-value = {p}")
+        return p < 0.05
+    return False
+
+def perform_dunn_test_by_component(component_averages, component):
+    data = []
+    groups = []
+    for section in component_averages[component]:
+        for value in component_averages[component][section]:
+            if value is not None:
+                data.append(value)
+                groups.append(section)
+    if data and groups:
+        df = pd.DataFrame({'Value': data, 'Group': groups})
+        dunn_p_values = scikit_posthocs.posthoc_dunn(df, val_col='Value', group_col='Group', p_adjust='bonferroni')
+        print(f"Dunn's test results for {component} (p-values):")
+        print(dunn_p_values)
+
+def perform_anova_on_components(component_averages):
+    for component in component_averages:
+        if perform_kruskal_wallis_test_by_component(component_averages, component):
+            perform_dunn_test_by_component(component_averages, component)
 
 def get_rms(file_path):
     y, sr = librosa.load(file_path)
@@ -33,6 +60,21 @@ def calculate_section_averages(sections, feature_values, sr, times):
             section_averages[label] = None
 
     return section_averages
+
+def plot_box_plot(section_averages, title):
+    data_to_plot = [avgs for avgs in section_averages.values()]
+    plt.boxplot(data_to_plot, labels=section_averages.keys())
+
+    plt.xlabel('Section')
+    plt.ylabel('Average RMS')
+    plt.title(title)
+
+    y_min, y_max = plt.ylim()
+    margin = (y_max - y_min) * 0.3
+    plt.ylim(y_min - margin, y_max + margin)
+
+    plt.tight_layout()
+    plt.show()
 
 def process_file(json_path, song_directory, component_averages, allin1, components):
     section_data = allin1.load_section_data(json_path)
@@ -66,6 +108,8 @@ def main(process_mode):
 
     process_files(json_directory, demucs_directory, allin1, component_averages, components)
 
+    perform_anova_on_components(component_averages)
+
     if process_mode == 'bar':
         for component in components:
             plot_bar_graph(component_averages[component], f"Bar Graph for {component.capitalize()}")
@@ -83,5 +127,5 @@ def main(process_mode):
         plot_combined_violin_plot(component_averages, components)
 
 if __name__ == "__main__":
-    process_mode = 'combined_box'  # 'bar' | 'combined_bar' | 'box' | 'combined_box' | 'violin' | 'combined_violin' | 'rms_plot'
+    process_mode = 'box'  # 'bar' | 'combined_bar' | 'box' | 'combined_box' | 'violin' | 'combined_violin'
     main(process_mode)

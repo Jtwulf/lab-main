@@ -39,29 +39,10 @@ def reevaluate_normality(all_section_averages):
         print(f"Reevaluated normality test for {section}: Statistics = {stat}, p-value = {p}")
     return transformed_data
 
-def check_normality(all_section_averages):
-    for section, data in all_section_averages.items():
-        stat, p = normaltest(data)
-        print(f"Normality test for {section}: Statistics = {stat}, p-value = {p}")
-
 def check_homoscedasticity(all_section_averages):
     data = [values for values in all_section_averages.values() if values]
     stat, p = levene(*data)
     print(f"Levene's test for homoscedasticity: Statistics = {stat}, p-value = {p}")
-
-def perform_anova_on_sections(component_averages):
-    F, p = f_oneway(component_averages['intro'], component_averages['drop'], component_averages['break'], component_averages['outro'])
-    print(f"ANOVA across sections: F = {F}, p-value = {p}")
-
-def perform_t_tests_on_all_sections(all_section_averages):
-    sections = list(all_section_averages.keys())
-
-    for section1, section2 in combinations(sections, 2):
-        data1 = all_section_averages[section1]
-        data2 = all_section_averages[section2]
-
-        t_stat, p_value = ttest_ind(data1, data2)
-        print(f"t-test between {section1} and {section2}: t-statistic = {t_stat}, p-value = {p_value}")
 
 def get_spectral_centroid(audio_file: str, n_fft=2048*2) -> Tuple[np.ndarray, float, np.ndarray]:
     y, sr = librosa.load(audio_file, sr=None)
@@ -113,6 +94,11 @@ def plot_box_plot(section_averages):
     plt.xlabel('Section')
     plt.ylabel('Average Spectral Centroid')
     plt.title('Box Plot of Average Spectral Centroid per Music Section')
+
+    y_min, y_max = plt.ylim()
+    margin = (y_max - y_min) * 0.3
+    plt.ylim(y_min - margin, y_max + margin)
+
     plt.tight_layout()
     plt.show()
 

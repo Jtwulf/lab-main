@@ -1,7 +1,49 @@
-from experiment1 import Allin1, plot_bar_graph, plot_box_plot, plot_violin_plot, calculate_section_averages
+from experiment1 import *
 from external_libraries import *
 from modules import *
 import data_const as const
+
+def plot_bar_graph(section_averages):
+    total_averages = {}
+    for section, avgs in section_averages.items():
+        if avgs:
+            total_averages[section] = np.mean(avgs)
+
+    plt.bar(total_averages.keys(), total_averages.values(), alpha=0.5, label='Average per section')
+    for section, avgs in section_averages.items():
+        if avgs:
+            plt.scatter([section] * len(avgs), avgs, color='red', label='Individual averages' if section == 'intro' else "")
+
+    plt.xlabel('Section')
+    plt.ylabel('Average RMS')
+    plt.title('Average RMS per Music Section')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+def plot_box_plot(section_averages):
+    plt.boxplot(section_averages.values(), labels=section_averages.keys(), showmeans=True)
+    plt.xlabel('Section')
+    plt.ylabel('Average RMS')
+    plt.title('Box Plot of Average RMS per Music Section')
+
+    y_min, y_max = plt.ylim()
+    margin = (y_max - y_min) * 0.3
+    plt.ylim(y_min - margin, y_max + margin)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_violin_plot(section_averages):
+    data_to_plot = [avgs for avgs in section_averages.values() if avgs]
+    plt.violinplot(data_to_plot)
+    plt.xticks(range(1, len(section_averages) + 1), section_averages.keys())
+    plt.xlabel('Section')
+    plt.ylabel('Average RMS')
+    plt.title('Violin Plot of Average RMS per Music Section')
+    plt.tight_layout()
+    plt.show()
+
 
 def get_rms(file_path):
     y, sr = librosa.load(file_path)
@@ -34,6 +76,13 @@ def main(process_mode):
     all_section_averages = {'intro': [], 'drop': [], 'break': [], 'outro': []}
 
     process_files(json_directory, song_directory, allin1, all_section_averages)
+
+    # 対数変換をした上でダゴスティーノのK^2検定(正規性の検討)
+    transformed_data = reevaluate_normality(all_section_averages)
+    # レヴィンの検定(等分散性の検討)
+    check_homoscedasticity(all_section_averages)
+    # クラスカル・ウォリス検定を行い，有意差があった場合にダンの検定
+    perform_dunn_test(all_section_averages)
 
     if process_mode == 'bar':
         plot_bar_graph(all_section_averages)
